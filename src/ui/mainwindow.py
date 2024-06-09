@@ -10,26 +10,21 @@ class FenetrePrincipale(QMainWindow):
         self.setWindowTitle("Visualiseur d'Images Médicales")
         self.setGeometry(100, 100, 800, 600)
 
-        # Widget central
         self.widgetCentral = QWidget(self)
         self.setCentralWidget(self.widgetCentral)
 
-        # Layout
         self.layout = QVBoxLayout()
         self.widgetCentral.setLayout(self.layout)
 
-        # Bouton de chargement pour DICOM
         self.boutonChargerDICOM = QPushButton("Charger Série DICOM", self)
         self.boutonChargerDICOM.clicked.connect(self.charger_serie_dicom)
         self.layout.addWidget(self.boutonChargerDICOM)
 
-        # Curseur pour la navigation des coupes
         self.curseurCoupe = QSlider(self)
         self.curseurCoupe.setOrientation(Qt.Horizontal)
         self.curseurCoupe.valueChanged.connect(self.mettre_a_jour_coupe)
         self.layout.addWidget(self.curseurCoupe)
 
-        # Contrôles pour le zoom et la rotation
         self.layoutControles = QHBoxLayout()
         self.boutonZoomAvant = QPushButton("Zoom Avant", self)
         self.boutonZoomAvant.clicked.connect(self.zoom_avant)
@@ -49,7 +44,6 @@ class FenetrePrincipale(QMainWindow):
 
         self.layout.addLayout(self.layoutControles)
 
-        # Contrôles de segmentation
         self.layoutSegmentation = QHBoxLayout()
         self.labelMin = QLabel("Seuil Min:", self)
         self.layoutSegmentation.addWidget(self.labelMin)
@@ -71,16 +65,13 @@ class FenetrePrincipale(QMainWindow):
 
         self.layout.addLayout(self.layoutSegmentation)
 
-        # Bouton d'exportation
         self.boutonExporter = QPushButton("Exporter l'Image", self)
         self.boutonExporter.clicked.connect(self.exporter_image)
         self.layout.addWidget(self.boutonExporter)
 
-        # Widget VTK
         self.vtkWidget = QVTKRenderWindowInteractor(self.widgetCentral)
         self.layout.addWidget(self.vtkWidget)
 
-        # Rendu VTK
         self.rendu = vtk.vtkRenderer()
         self.vtkWidget.GetRenderWindow().AddRenderer(self.rendu)
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
@@ -104,7 +95,6 @@ class FenetrePrincipale(QMainWindow):
         if self.acteur_image:
             self.rendu.RemoveActor(self.acteur_image)
 
-        # Créer un acteur d'image pour afficher la coupe
         self.acteur_image = vtk.vtkImageActor()
         self.acteur_image.GetMapper().SetInputConnection(reslice.GetOutputPort())
         
@@ -144,7 +134,6 @@ class FenetrePrincipale(QMainWindow):
         seuil_max = self.seuilMax.value()
 
         if self.reslice:
-            # Appliquer le filtre de seuillage
             threshold = vtk.vtkImageThreshold()
             threshold.SetInputConnection(self.reslice.GetOutputPort())
             threshold.ThresholdBetween(seuil_min, seuil_max)
@@ -158,12 +147,10 @@ class FenetrePrincipale(QMainWindow):
     def exporter_image(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Exporter l'Image", "", "Images (*.png *.jpg *.bmp)")
         if file_path:
-            # Capturer le rendu actuel de la fenêtre VTK
             window_to_image_filter = vtk.vtkWindowToImageFilter()
             window_to_image_filter.SetInput(self.vtkWidget.GetRenderWindow())
             window_to_image_filter.Update()
 
-            # Sauvegarder l'image capturée dans le fichier sélectionné
             writer = vtk.vtkPNGWriter()
             writer.SetFileName(file_path)
             writer.SetInputConnection(window_to_image_filter.GetOutputPort())

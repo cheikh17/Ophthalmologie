@@ -18,7 +18,6 @@ class ImageLoader:
         return reslice, reader, extent
 
     def get_slice(self, reslice, slice_number):
-        # Update the reslice object to get the desired slice
         reslice.SetResliceAxesOrigin(0, 0, slice_number)
         reslice.Update()
         return reslice.GetOutput()

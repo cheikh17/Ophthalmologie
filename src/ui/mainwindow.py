@@ -148,16 +148,14 @@ class FenetrePrincipale(QMainWindow):
             threshold = vtk.vtkImageThreshold()
             threshold.SetInputConnection(self.reslice.GetOutputPort())
             threshold.ThresholdBetween(seuil_min, seuil_max)
-            threshold.SetInValue(255)  # Valeur pour les régions segmentées
-            threshold.SetOutValue(0)   # Valeur pour les régions non segmentées
+            threshold.SetInValue(255) 
+            threshold.SetOutValue(0)   
             threshold.Update()
 
-            # Mettre à jour l'acteur d'image pour afficher l'image segmentée
             self.acteur_image.GetMapper().SetInputConnection(threshold.GetOutputPort())
             self.vtkWidget.GetRenderWindow().Render()
 
     def exporter_image(self):
-        # Ouvrir une boîte de dialogue pour choisir l'emplacement et le nom du fichier
         file_path, _ = QFileDialog.getSaveFileName(self, "Exporter l'Image", "", "Images (*.png *.jpg *.bmp)")
         if file_path:
             # Capturer le rendu actuel de la fenêtre VTK
